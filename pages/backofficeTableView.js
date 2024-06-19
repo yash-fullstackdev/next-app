@@ -11,6 +11,7 @@ import {
   CircularProgress,
   Typography,
   Box,
+  Button,
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import styles from "../styles/userDataResPage.module.css";
@@ -90,6 +91,11 @@ export default function UserDataResPage() {
     }
   }, [userDataRes]);
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    router.push("/login");
+  };
+
   if (loading) return <LoadingIndicator />;
   if (error) return <ErrorMessage error={error} />;
 
@@ -99,9 +105,21 @@ export default function UserDataResPage() {
         className={styles.pageContainer}
         sx={{ padding: 3, backgroundColor: theme.palette.background.default }}
       >
-        <Typography variant="h4" color="primary" gutterBottom>
-          Backoffice Data
-        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 3,
+          }}
+        >
+          <Typography variant="h4" color="primary" gutterBottom>
+            Backoffice Data
+          </Typography>
+          <Button variant="contained" color="secondary" onClick={handleLogout}>
+            Logout
+          </Button>
+        </Box>
         <TableContainer component={Paper} className={styles.tableContainer}>
           <Table className={styles.table}>
             <TableHead>

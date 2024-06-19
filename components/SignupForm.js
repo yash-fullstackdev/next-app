@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRouter } from "next/router";
 import styles from "../styles/SignupForm.module.css";
 import axios from "axios";
 
@@ -8,6 +9,8 @@ export default function SignupForm() {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("customer");
   const [message, setMessage] = useState("");
+
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,6 +26,8 @@ export default function SignupForm() {
       setName("");
       setPassword("");
       setRole("customer");
+      // Redirect to the home page after a successful signup
+      router.push("/");
     } catch (error) {
       setMessage(error.response.data.error);
     }
