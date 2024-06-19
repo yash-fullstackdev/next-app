@@ -16,33 +16,19 @@ export default function LoginForm() {
       const { token, user } = loginRes.data;
 
       localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("userUid", user.userUid);
 
-      let apiUrl;
       if (user.role === "customer") {
-        apiUrl = "/api/customer-data";
+        router.push({
+          pathname: "/customerTableView",
+        });
       } else if (user.role === "backoffice") {
-        apiUrl = "/api/backoffice-data";
+        router.push({
+          pathname: "/backofficeTableView",
+        });
       } else {
         throw new Error("Access restricted to customers and backoffice only.");
       }
-
-      const userDataRes = await axios.get(apiUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        params: {
-          userUid: user.userUid,
-        },
-      });
-
-      router.push({
-        pathname:
-          user.role === "customer"
-            ? "/customerTableView"
-            : "/backofficeTableView",
-        query: { userDataRes: JSON.stringify(userDataRes.data) },
-      });
     } catch (error) {
       setMessage(
         error.response?.data?.error || "An error occurred during login"

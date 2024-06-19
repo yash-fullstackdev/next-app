@@ -14,57 +14,59 @@ import {
   Button,
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import axios from "axios";
 import styles from "../styles/userDataResPage.module.css";
 
 const theme = createTheme({
   palette: {
-    primary: {
-      main: "#3f51b5",
-    },
-    secondary: {
-      main: "#f50057",
-    },
-    background: {
-      default: "#f4f6f8",
-      paper: "#fff",
-    },
-    text: {
-      primary: "#333",
-      secondary: "#888",
-    },
+    primary: { main: "#3f51b5" },
+    secondary: { main: "#f50057" },
+    background: { default: "#f4f6f8", paper: "#fff" },
+    text: { primary: "#333", secondary: "#888" },
   },
   typography: {
-    h6: {
-      fontSize: "1.1rem",
-      fontWeight: 600,
-    },
+    h6: { fontSize: "1.1rem", fontWeight: 600 },
   },
 });
 
 export default function UserDataResPage() {
   const router = useRouter();
-  const { userDataRes } = router.query;
   const [parsedUserDataRes, setParsedUserDataRes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (userDataRes) {
+    const fetchData = async () => {
       try {
-        const parsedData = JSON.parse(userDataRes);
-        setParsedUserDataRes(parsedData);
+        const token = localStorage.getItem("token");
+        const userUid = localStorage.getItem("userUid");
+
+        if (!token || !userUid) {
+          router.push("/login");
+          return;
+        }
+
+        const apiUrl = `/api/customer-data?userUid=${userUid}`;
+        const response = await axios.get(apiUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setParsedUserDataRes(response.data);
       } catch (error) {
-        setError("Error parsing customer data");
+        setError("Error fetching customer data");
       } finally {
         setLoading(false);
       }
-    } else {
-      setLoading(false);
-    }
-  }, [userDataRes]);
+    };
+
+    fetchData();
+  }, [router]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("userUid");
     router.push("/login");
   };
 
